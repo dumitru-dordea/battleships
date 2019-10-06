@@ -1,2 +1,6 @@
+.vs
 Battleships/bin
 Battleships/obj
+BattleshipsTests/bin
+BattleshipsTests/obj
+Battleships/*.user

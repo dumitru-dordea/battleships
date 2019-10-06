@@ -1,39 +1,37 @@
-﻿using System;
+﻿using Battleships;
+using System;
 using System.Collections.Generic;
 using System.Text;
-
-namespace Battleships
+public class BattleshipsGrid : IBattleshipsGrid
 {
-    public class BattleshipsGrid
+    public int Size { get; set; }
+
+    public List<IShip> Ships = new List<IShip>();
+
+    public void AddShip(IShip newShip)
     {
-        public int Size { get; set; }
+        Ships.Add(newShip);
+    }
 
-        private List<Ship> Ships = new List<Ship>();
-
-        public void AddShip(Ship newShip)
-        {            
-            Ships.Add(newShip);
-        }
-
-        public bool AnyShipAlive()
+    public bool AnyShipAlive()
+    {
+        foreach (var ship in Ships)
         {
-            foreach(var ship in Ships)
-            {
-                if (ship.IsAlive())
-                    return true;
-            }
-            return false;
+            if (ship.IsAlive())
+                return true;
         }
+        return false;
+    }
 
-        internal ShotResult Shot(int x, int y)
+    public ShotResult Shot(int x, int y)
+    {
+        foreach (var ship in Ships)
         {
-            foreach (var ship in Ships)
-            {
-                ShotResult shotResult = ship.Shot(x, y);
-                if (shotResult != ShotResult.Miss)
-                    return shotResult;
-            }
-            return ShotResult.Miss;
+            ShotResult shotResult = ship.Shot(x, y);
+            if (shotResult != ShotResult.Miss)
+                return shotResult;
         }
+        return ShotResult.Miss;
     }
 }
+

@@ -6,36 +6,36 @@ namespace Battleships
 {
     public class BattleshipsGame
     {
-        private static Random rnd = new Random();
+        private readonly Random rnd = new Random();
 
-        private BattleshipsGrid grid = new BattleshipsGrid();
-
-        public void Init(int size)
+        private IBattleshipsGrid Grid { get; set; }
+        public bool[,] BusyMap { get; set; }
+        public void Init(IBattleshipsGrid grid)
         {
-            grid.Size = size;
+            Grid = grid;
 
-            bool[,] busyMap = new bool[size, size];
-            for (int x = 0; x < size; x++)
+            BusyMap = new bool[grid.Size, grid.Size];
+            for (int x = 0; x < grid.Size; x++)
             {
-                for (int y = 0; y < size; y++)
+                for (int y = 0; y < grid.Size; y++)
                 {
-                    busyMap[x, y] = false;
+                    BusyMap[x, y] = false;
                 }
             }
 
-            Ship battleship = GetRandomShip(5, size);
+            Ship battleship = GetRandomShip(5, grid.Size);
             grid.AddShip(battleship);
-            MarkBusyZone(battleship, ref busyMap, size);
+            MarkBusyZone(battleship, grid.Size);
 
             int destroyerCount = 0;
             while (destroyerCount < 2)
             {
-                Ship destroyer = GetRandomShip(4, size);
-                bool isOverBusyZone = ShipOverBusyZone(destroyer, busyMap, size);
+                Ship destroyer = GetRandomShip(4, grid.Size);
+                bool isOverBusyZone = ShipOverBusyZone(destroyer);
                 if (!isOverBusyZone)
                 {
                     grid.AddShip(destroyer);
-                    MarkBusyZone(battleship, ref busyMap, size);
+                    MarkBusyZone(battleship, grid.Size);
                     destroyerCount++;
                 }
             }
@@ -43,8 +43,8 @@ namespace Battleships
 
         public void Play()
         {
-            Console.WriteLine($"Battleships board: A1:{(char)('A' + grid.Size - 1)}{grid.Size}");
-            while (grid.AnyShipAlive())
+            Console.WriteLine($"Battleships board: A1:{(char)('A' + Grid.Size - 1)}{Grid.Size}");
+            while (Grid.AnyShipAlive())
             {
                 Console.Write("Shot:");
                 string pos = Console.ReadLine().ToUpper();
@@ -52,12 +52,12 @@ namespace Battleships
                 {
                     char col = pos[0];
                     Int32.TryParse(pos.Substring(1), out int row);
-                    
+
                     int x = col - 'A';
                     int y = row - 1;
-                    if (x >= 0 && x < grid.Size && y >= 0 && y < grid.Size)
+                    if (x >= 0 && x < Grid.Size && y >= 0 && y < Grid.Size)
                     {
-                        ShotResult shotResult = grid.Shot(x, y);
+                        ShotResult shotResult = Grid.Shot(x, y);
                         Console.WriteLine(shotResult);
                     }
                     else
@@ -73,7 +73,7 @@ namespace Battleships
             Console.WriteLine("Game Over. All Battleships sinked!");
         }
 
-        private void MarkBusyZone(Ship ship, ref bool[,] busyMap, int size)
+        private void MarkBusyZone(Ship ship, int size)
         {
             int xLastPoint = ship.Direction == Direction.Horizontal ? ship.PosX + ship.Length - 1 : ship.PosX;
             int yLastPoint = ship.Direction == Direction.Horizontal ? ship.PosY : ship.PosY + ship.Length - 1;
@@ -84,27 +84,27 @@ namespace Battleships
                 {
                     if (x >= 0 && x < size && y >= 0 && y < size)
                     {
-                        busyMap[x, y] = true;
+                        BusyMap[x, y] = true;
                     }
                 }
             }
         }
 
-        private bool ShipOverBusyZone(Ship ship, bool[,] busyMap, int size)
+        private bool ShipOverBusyZone(Ship ship)
         {
             for (int i = 0; i < ship.Length; i++)
             {
                 int x = ship.Direction == Direction.Horizontal ? ship.PosX + i : ship.PosX;
                 int y = ship.Direction == Direction.Horizontal ? ship.PosY : ship.PosY + i;
-                if (busyMap[x, y])
+                if (BusyMap[x, y])
                     return true;
             }
             return false;
         }
 
-        private Ship GetRandomShip(int shipLength, int gridSize)
+        public Ship GetRandomShip(int shipLength, int gridSize)
         {
-            Ship ship = new Ship();
+            var ship = new Ship();
             ship.Length = shipLength;
             ship.Direction = rnd.Next(2) == 1 ? Direction.Horizontal : Direction.Vertical;
             if (ship.Direction == Direction.Horizontal)

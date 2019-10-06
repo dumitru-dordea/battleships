@@ -7,7 +7,7 @@ namespace Battleships
         static void Main(string[] args)
         {
             BattleshipsGame game = new BattleshipsGame();
-            game.Init(10);
+            game.Init(new BattleshipsGrid() { Size = 10 });
             game.Play();
             Console.ReadLine();
         }

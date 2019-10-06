@@ -5,21 +5,19 @@ using System.Text;
 
 namespace Battleships
 {
-    public class Ship
+    public class Ship : IShip
     {
         public int PosX { get; set; }
         public int PosY { get; set; }
         public Direction Direction { get; set; }
         public int Length { get; set; }
-
-        private List<int> HitList = new List<int>();               
-
+        public List<int> HitList = new List<int>();
         public bool IsAlive()
         {
             return HitList.Count() < Length;
         }
 
-        internal ShotResult Shot(int x, int y)
+        public ShotResult Shot(int x, int y)
         {
             if (Direction == Direction.Horizontal)
             {

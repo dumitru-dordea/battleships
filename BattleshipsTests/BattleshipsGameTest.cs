@@ -36,6 +36,7 @@ namespace BattleshipsTests
         [Fact]
         public void MarkBusyZone_AddShipGridSize_ReturnBusyZoneTrue()
         {
+            // Arrange
             var battleshipsGame = new BattleshipsGame();
 
             var mock = new Mock<IBattleshipsGrid>();

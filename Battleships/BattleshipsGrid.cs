@@ -12,7 +12,7 @@ public class BattleshipsGrid : IBattleshipsGrid
     {
         Ships.Add(newShip);
     }
-
+    
     public bool AnyShipAlive()
     {
         foreach (var ship in Ships)
@@ -22,7 +22,7 @@ public class BattleshipsGrid : IBattleshipsGrid
         }
         return false;
     }
-
+    string Test = "Test";
     public ShotResult Shot(int x, int y)
     {
         foreach (var ship in Ships)
